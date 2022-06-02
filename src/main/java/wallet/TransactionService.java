@@ -22,6 +22,7 @@ public class TransactionService {
         }
         if (amount > wallet.getAmount()) {
             System.out.println(NOTENOUGH);
+            System.out.println(wallet);
         }
         else {
             wallet.setAmount(wallet.getAmount() - amount);

@@ -11,7 +11,7 @@ public class TransactionRepository {
     private Connection connection = PostgresConnection.getInstance().getConnection();
 
     public TransactionRepository() throws SQLException {
-        String transactionTable = "CREATE TABLE IF NOT EXISTS tranaction (" +
+        String transactionTable = "CREATE TABLE IF NOT EXISTS transactions (" +
                 "    id serial primary key," +
                 "    wallet_id int," +
                 "    amount int," +
@@ -25,7 +25,7 @@ public class TransactionRepository {
     }
 
     public void insert(Transaction transaction) throws SQLException {
-        String insert = "INSERT INTO transaction (wallet_id, amount, status, transaction_type) VALUES (?,?,?,?)";
+        String insert = "INSERT INTO transactions (wallet_id, amount, status, transaction_type) VALUES (?,?,?,?)";
         PreparedStatement preparedStatement = connection.prepareStatement(insert);
         preparedStatement.setInt(1,transaction.getWallet().getId());
         preparedStatement.setInt(2,transaction.getAmount());
@@ -36,7 +36,7 @@ public class TransactionRepository {
     }
 
     public void update (Transaction transaction, Integer amount, Status status, Type type) throws SQLException {
-        String update = "UPDATE transaction SET " +
+        String update = "UPDATE transactions SET " +
                 "wallet_id = ? " +
                 "AND amount = ?" +
                 "AND status = ?" +
@@ -53,7 +53,7 @@ public class TransactionRepository {
     }
 
     public void delete (Transaction transaction) throws SQLException {
-        String delete = "DELETE FROM transaction WHERE id = ?";
+        String delete = "DELETE FROM transactions WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(delete);
         preparedStatement.setInt(1,transaction.getId());
         preparedStatement.executeUpdate();
@@ -61,7 +61,7 @@ public class TransactionRepository {
     }
 
     public Transaction findById(Integer id) throws SQLException {
-        String findById = "SELECT * FROM transaction WHERE id = ?";
+        String findById = "SELECT * FROM transactions WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(findById);
         preparedStatement.setInt(1,id);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -79,7 +79,7 @@ public class TransactionRepository {
     }
 
     public List<Transaction> findAll() throws SQLException {
-        String findAll = "SELECT * FROM transaction ";
+        String findAll = "SELECT * FROM transactions ";
         PreparedStatement preparedStatement = connection.prepareStatement(findAll);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();

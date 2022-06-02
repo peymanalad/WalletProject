@@ -51,7 +51,7 @@ public class WalletRepository {
         preparedStatement.setInt(1,id);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
-        Wallet wallet = null;
+        Wallet wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
         if (resultSet.next()) {
             wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
         }
