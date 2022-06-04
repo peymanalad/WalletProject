@@ -50,8 +50,7 @@ public class WalletRepository {
         PreparedStatement preparedStatement = connection.prepareStatement(findById);
         preparedStatement.setInt(1,id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        Wallet wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
+        Wallet wallet = null;
         if (resultSet.next()) {
             wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
         }

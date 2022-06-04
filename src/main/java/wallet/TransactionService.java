@@ -1,5 +1,8 @@
 package wallet;
 
+import customexception.NotEnoughMoneyException;
+import customexception.NotExistException;
+
 import java.sql.SQLException;
 import java.util.Random;
 
@@ -7,8 +10,7 @@ public class TransactionService {
 
     private TransactionRepository transactionRepository = new TransactionRepository();
     private WalletService walletService = new WalletService();
-    private final String NOTEXIST = "Wallet does not exist";
-    private final String NOTENOUGH = "Not Enough money to withdraw!";
+
 
 
     public TransactionService() throws SQLException {
@@ -17,12 +19,11 @@ public class TransactionService {
     public void withDraw(Integer amount, Integer walletId) throws SQLException {
         Wallet wallet = walletService.findById(walletId);
         if (wallet == null){
-            System.out.println(NOTEXIST);
-            return;
+            throw new NotExistException("/Wallet doesn't exist");
         }
         if (amount > wallet.getAmount()) {
-            System.out.println(NOTENOUGH);
             System.out.println(wallet);
+            throw new NotEnoughMoneyException("/Not enough money in wallet!");
         }
         else {
             wallet.setAmount(wallet.getAmount() - amount);
@@ -35,8 +36,7 @@ public class TransactionService {
     public void deposit(Integer amount, Integer walletId) throws SQLException {
         Wallet wallet = walletService.findById(walletId);
         if (wallet == null){
-            System.out.println(NOTEXIST);
-            return;
+            throw new NotExistException("Wallet doesn't exist");
         }
         wallet.setAmount(wallet.getAmount() + amount);
         walletService.update(wallet);
