@@ -5,10 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WalletRepository {
     private Connection connection = PostgresConnection.getInstance().getConnection();
+    private Map<String,Wallet> mapByID = new HashMap<>();
+    private Map<String,List<Wallet>> mapAll = new HashMap<>();
 
     public WalletRepository() throws SQLException {
         String walletTable = "CREATE TABLE IF NOT EXISTS wallet (" +
@@ -49,10 +53,16 @@ public class WalletRepository {
         String findById = "SELECT * FROM wallet WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(findById);
         preparedStatement.setInt(1,id);
+        System.out.println(preparedStatement);
+        if (mapByID.containsKey(preparedStatement.toString())) {
+            System.out.println("reading from cache");
+            return mapByID.get(preparedStatement.toString());
+        }
         ResultSet resultSet = preparedStatement.executeQuery();
         Wallet wallet = null;
         if (resultSet.next()) {
             wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
+            mapByID.put(String.valueOf(preparedStatement),wallet);
         }
         return wallet;
     }
@@ -60,11 +70,16 @@ public class WalletRepository {
     public List<Wallet> findAll() throws SQLException {
         String findAll = "SELECT * FROM wallet";
         PreparedStatement preparedStatement = connection.prepareStatement(findAll);
+        System.out.println(preparedStatement);
+        if (mapAll.containsKey(preparedStatement.toString())) {
+            System.out.println("Reading from cache");
+            return mapAll.get(preparedStatement.toString());
+        }
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
         List<Wallet> walletList = new ArrayList<>();
         while (resultSet.next()) {
             walletList.add(new Wallet(resultSet.getInt("id"), resultSet.getInt("amount")));
+            mapAll.put(preparedStatement.toString(),walletList);
         }
         return walletList;
     }

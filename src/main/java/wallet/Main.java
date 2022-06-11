@@ -13,16 +13,20 @@ public class Main {
         Connection connection = PostgresConnection.getInstance().getConnection();
         WalletService walletService = new WalletService();
         TransactionService transactionService=new TransactionService();
-        try {
-            transactionService.withDraw(6000, 2);
+//        try {
+//            transactionService.withDraw(6000, 2);
+//        }
+//        catch (NotEnoughMoneyException e) {
+//            e.printStackTrace();
+//        }
+//        catch (NotExistException e) {
+//            e.printStackTrace();
+//        }
+        walletService.showBalance(3);
+        walletService.findById(3);
+        for (Wallet w: walletService.findAll()) {
+            System.out.println(w);
         }
-        catch (NotEnoughMoneyException e) {
-            e.printStackTrace();
-        }
-        catch (NotExistException e) {
-            e.printStackTrace();
-        }
-
 
 
     }

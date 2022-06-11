@@ -5,10 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TransactionRepository {
     private Connection connection = PostgresConnection.getInstance().getConnection();
+    Map<String,Transaction> mapByID = new HashMap<>();
+    Map<String,List<Transaction>> mapAll = new HashMap<>();
 
     public TransactionRepository() throws SQLException {
         String transactionTable = "CREATE TABLE IF NOT EXISTS transactions (" +
@@ -65,7 +69,11 @@ public class TransactionRepository {
         PreparedStatement preparedStatement = connection.prepareStatement(findById);
         preparedStatement.setInt(1,id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
+        System.out.println(preparedStatement);
+        if (mapByID.containsKey(preparedStatement.toString())) {
+            System.out.println("Read from cache");
+            return mapByID.get(preparedStatement.toString());
+        }
         WalletRepository walletRepository = new WalletRepository();
         Transaction transaction = null;
         if (resultSet.next()) {
@@ -74,6 +82,7 @@ public class TransactionRepository {
                     resultSet.getInt("amount"),
                     Status.valueOf(resultSet.getString("status")),
                     Type.valueOf(resultSet.getString("transaction_type")));
+            mapByID.put(preparedStatement.toString(),transaction);
         }
         return transaction;
     }
@@ -82,7 +91,11 @@ public class TransactionRepository {
         String findAll = "SELECT * FROM transactions ";
         PreparedStatement preparedStatement = connection.prepareStatement(findAll);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
+        System.out.println(preparedStatement);
+        if (mapAll.containsKey(preparedStatement.toString())) {
+            System.out.println("Read from cache");
+            return mapAll.get(preparedStatement.toString());
+        }
         WalletRepository walletRepository = new WalletRepository();
         List<Transaction> transactionsList = new ArrayList<>();
         while (resultSet.next()) {
@@ -91,6 +104,7 @@ public class TransactionRepository {
                     resultSet.getInt("amount"),
                     Status.valueOf(resultSet.getString("status")),
                     Type.valueOf(resultSet.getString("transaction_type"))));
+            mapAll.put(preparedStatement.toString(),transactionsList);
         }
         return transactionsList;
     }

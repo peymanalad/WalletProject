@@ -43,5 +43,14 @@ public class TransactionService {
         Transaction transaction = new Transaction(wallet, amount, Status.ACCEPTED, Type.DEPOSIT);
         transactionRepository.insert(transaction);
     }
+    public void findById(Integer id) throws SQLException {
+        System.out.println(transactionRepository.findById(id).toString());
+    }
+
+    public void findAll() throws SQLException {
+        for (Transaction t: transactionRepository.findAll()) {
+            System.out.println(t);
+        }
+    }
 
 }
