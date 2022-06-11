@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class TransactionRepository {
     private Connection connection = PostgresConnection.getInstance().getConnection();
-    Map<String,Transaction> mapByID = new HashMap<>();
     Map<String,List<Transaction>> mapAll = new HashMap<>();
 
     public TransactionRepository() throws SQLException {
@@ -70,9 +69,11 @@ public class TransactionRepository {
         preparedStatement.setInt(1,id);
         ResultSet resultSet = preparedStatement.executeQuery();
         System.out.println(preparedStatement);
-        if (mapByID.containsKey(preparedStatement.toString())) {
+        if (mapAll.containsKey(preparedStatement.toString())) {
             System.out.println("Read from cache");
-            return mapByID.get(preparedStatement.toString());
+            List<Transaction> transactionArrayList = new ArrayList<>();
+            transactionArrayList.addAll(mapAll.get(preparedStatement.toString()));
+            return transactionArrayList.get(0);
         }
         WalletRepository walletRepository = new WalletRepository();
         Transaction transaction = null;
@@ -82,7 +83,9 @@ public class TransactionRepository {
                     resultSet.getInt("amount"),
                     Status.valueOf(resultSet.getString("status")),
                     Type.valueOf(resultSet.getString("transaction_type")));
-            mapByID.put(preparedStatement.toString(),transaction);
+            List<Transaction> transactionsList = new ArrayList<>(1);
+            transactionsList.add(transaction);
+            mapAll.put(preparedStatement.toString(), transactionsList);
         }
         return transaction;
     }

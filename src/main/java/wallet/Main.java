@@ -23,7 +23,11 @@ public class Main {
 //            e.printStackTrace();
 //        }
         walletService.showBalance(3);
-        walletService.findById(3);
+        System.out.println(walletService.findById(3));
+        System.out.println("---------------");
+        for (Wallet w: walletService.findAll()) {
+            System.out.println(w);
+        }
         for (Wallet w: walletService.findAll()) {
             System.out.println(w);
         }

@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class WalletRepository {
     private Connection connection = PostgresConnection.getInstance().getConnection();
-    private Map<String,Wallet> mapByID = new HashMap<>();
     private Map<String,List<Wallet>> mapAll = new HashMap<>();
 
     public WalletRepository() throws SQLException {
@@ -54,15 +53,19 @@ public class WalletRepository {
         PreparedStatement preparedStatement = connection.prepareStatement(findById);
         preparedStatement.setInt(1,id);
         System.out.println(preparedStatement);
-        if (mapByID.containsKey(preparedStatement.toString())) {
+        if (mapAll.containsKey(preparedStatement.toString())) {
             System.out.println("reading from cache");
-            return mapByID.get(preparedStatement.toString());
+            List<Wallet> walletList = new ArrayList<>();
+            walletList.addAll(mapAll.get(preparedStatement.toString()));
+            return walletList.get(0);
         }
         ResultSet resultSet = preparedStatement.executeQuery();
         Wallet wallet = null;
         if (resultSet.next()) {
             wallet = new Wallet(resultSet.getInt("id"), resultSet.getInt("amount"));
-            mapByID.put(String.valueOf(preparedStatement),wallet);
+            List<Wallet> walletList = new ArrayList<>(1);
+            walletList.add(wallet);
+            mapAll.put(String.valueOf(preparedStatement), walletList);
         }
         return wallet;
     }
