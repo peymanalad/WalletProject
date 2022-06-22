@@ -56,8 +56,8 @@ class WalletRepositoryTest {
         List<Wallet> walletList = walletRepository.findAll();
 
         //Assert
-        assertEquals(30,walletList.size());
-        org.assertj.core.api.Assertions.assertThat(walletList.size()).isGreaterThanOrEqualTo(15);
+        assertEquals(3,walletList.size());
+        org.assertj.core.api.Assertions.assertThat(walletList.size()).isGreaterThanOrEqualTo(3);
     }
 
     @Test
@@ -88,7 +88,7 @@ class WalletRepositoryTest {
 
         //Assert
         List<Wallet> walletList = walletRepository.findAll();
-        assertThat(walletList).hasSize(35);
+        assertThat(walletList).hasSize(3);
 
     }
 
@@ -96,9 +96,8 @@ class WalletRepositoryTest {
     @AfterEach
     public void cleanUp() throws SQLException {
         //delete all records in table
-        String delete = "DELETE FROM wallet where id = ?";
+        String delete = "DELETE FROM wallet where id";
         PreparedStatement preparedStatement = PostgresConnection.getInstance().getConnection().prepareStatement(delete);
-        preparedStatement.setInt(1,id);
         preparedStatement.execute();
         preparedStatement.close();
     }

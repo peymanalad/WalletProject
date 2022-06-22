@@ -24,7 +24,7 @@ public class WalletRepository {
         String insert = "INSERT INTO wallet (amount) VALUES (?)";
         PreparedStatement preparedStatement = connection.prepareStatement(insert,Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1,wallet.getAmount());
-        preparedStatement.executeUpdate();
+        preparedStatement.execute();
         ResultSet generateId = preparedStatement.getGeneratedKeys();
         Integer id = null;
         if (generateId.next()) {

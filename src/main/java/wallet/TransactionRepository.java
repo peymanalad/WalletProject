@@ -1,9 +1,6 @@
 package wallet;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,15 +24,22 @@ public class TransactionRepository {
         preparedStatement.close();
     }
 
-    public void insert(Transaction transaction) throws SQLException {
+    public Integer insert(Transaction transaction) throws SQLException {
         String insert = "INSERT INTO transactions (wallet_id, amount, status, transaction_type) VALUES (?,?,?,?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(insert);
+        PreparedStatement preparedStatement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1,transaction.getWallet().getId());
         preparedStatement.setInt(2,transaction.getAmount());
-        preparedStatement.setString(3,transaction.getStatus().name());
-        preparedStatement.setString(4,transaction.getType().name());
+        preparedStatement.setObject(3,transaction.getStatus().name(),Types.OTHER);
+        preparedStatement.setObject(4,transaction.getType().name(),Types.OTHER);
         preparedStatement.executeUpdate();
+        ResultSet generateId = preparedStatement.getGeneratedKeys();
+        Integer id = null;
+        if (generateId.next()) {
+            id = generateId.getInt(1);
+        }
+        mapAll.clear();
         preparedStatement.close();
+        return id;
     }
 
     public void update (Transaction transaction, Integer amount, Status status, Type type) throws SQLException {
