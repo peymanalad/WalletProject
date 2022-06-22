@@ -20,13 +20,19 @@ public class WalletRepository {
         preparedStatement.close();
     }
     //CRUD
-    public void insert(Wallet wallet) throws SQLException {
+    public Integer insert(Wallet wallet) throws SQLException {
         String insert = "INSERT INTO wallet (amount) VALUES (?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(insert);
+        PreparedStatement preparedStatement = connection.prepareStatement(insert,Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1,wallet.getAmount());
         preparedStatement.executeUpdate();
+        ResultSet generateId = preparedStatement.getGeneratedKeys();
+        Integer id = null;
+        if (generateId.next()) {
+            id = generateId.getInt(1);
+        }
         mapAll.clear();
         preparedStatement.close();
+        return id;
     }
 
     public void update(Wallet wallet) throws SQLException {
